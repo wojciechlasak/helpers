@@ -1,129 +1,120 @@
-/*scroll*/
-(function() {
-  window.scrollEnable = true;
+const createAnchorScroll = (function() {
+  const navScrollCollection = [];
+  let wraperNav;
 
-  function createObjects(wraper, section, sectionNav) {
-    const array = [];
-    $(wraper)
-      .find(section)
-      .map(function() {
-        const title = $(this).data('anchor');
-        const anchor = $(sectionNav).filter(function() {
-          return $(this).data('ref') === title;
-        });
-        array.push(new Section($(this), anchor, title, $(this).find('img')));
+  class NavScroll {
+    constructor($t, id, anchor, title, img, options) {
+      this.$t = $t;
+      this.id = id;
+      this.anchor = anchor;
+      this.title = title;
+      this.img = img;
+      this.scrollItem = createScrollItem(this.anchor);
+      this.disable = false;
+
+      this.options = options;
+      this.onScroll = this.options.onScroll;
+
+      this.$t.on('click', () => {
+        goTo(this.id);
       });
-    return array;
-  }
-
-  function Section(t, anchor, title, img) {
-    this.t = t;
-    this.title = title;
-    this.anchor = anchor;
-    this.img = img;
-
-    this.t.on(
-      'click',
-      function() {
-        if (offer === true) {
-          $('#offer-nav, #offer-nav-mobile-arrow').removeClass('nav-show');
-        }
-        else if (career === true) {
-          $('#career-nav, #career-nav-mobile-arrow').removeClass('nav-show');
-        }
-        if (!$(this.t).hasClass('disabled-scroll')) {
-          let top = this.anchor.offset().top;
-          top = Math.min(top - 50, top - f3.h / 2 + this.anchor.height() / 2, $(document).height() - f3.h);
-          top = Math.max(top, 50);
-          $('html, body')
-            .stop()
-            .animate(
-              {
-                scrollTop: top,
-              },
-              500
-            );
-        }
-      }.bind(this)
-    );
-  }
-
-  let sectionArray = [];
-  let offer = false;
-  let career = false;
-  if ($('#offer-nav').length !== 0) {
-    sectionArray = createObjects(
-      '#offer-nav',
-      '.offer-nav-single',
-      '.offer-anchor'
-    );
-    offer = true;
-  }
-  else if ($('#shops-list-single-container').length !== 0) {
-    sectionArray = createObjects(
-      '#shops-list-single-container',
-      '.shops-list-street-container',
-      '.shop-single'
-    );
-  }
-  else if ($('#career-nav').length !== 0) {
-    sectionArray = createObjects(
-      '#career-list, #career-nav',
-      '.career-list-single, .career-nav-single',
-      '.career-single'
-    );
-    career = true;
-  }
-
-  Section.prototype.resize = function() {
-    this.h = this.anchor.offset().top;
-    this.size = this.anchor.height();
-  };
-
-  function sectionResize() {
-    for (let i = 0; i < sectionArray.length; i++) {
-      sectionArray[i].resize();
     }
-    sectionCurrent();
   }
 
-  function sectionCurrent() {
-    if (scrollEnable) {
-      const bestIndex = sectionArray.reduce(
-        function(
-          bestIndex,
-          current,
-          i,
-          arr
-        ) {
-          return Math.abs(f3.s + f3.h / 2 - current.h - current.size / 2) <
-          Math.abs(f3.s + f3.h / 2 - arr[bestIndex].h - arr[bestIndex].size / 2)
-            ? i
-            : bestIndex;
+  function goTo(id) {
+    let scrollItem = navScrollCollection[id].scrollItem;
+    let anchorTop = scrollItem.offset;
+    anchorTop = Math.min(
+      anchorTop - 50,
+      anchorTop - f3.h / 2 + scrollItem.height / 2,
+      f3.documentH - f3.h
+    );
+    anchorTop = Math.max(anchorTop, 0);
+    $('html, body')
+      .stop()
+      .animate(
+        {
+          scrollTop: anchorTop,
         },
-        0
+        500
       );
-      sectionArray.map(function(current, i) {
-        current.t.removeClass('current');
-      });
-      if (sectionArray[bestIndex] !== 0) {
-        sectionArray[bestIndex].t.addClass('current');
+  }
+
+  function checkIsAllOnScreen() {
+    let indexOfLast = navScrollCollection.length - 1;
+    if (
+      Math.abs(navScrollCollection[0].scrollItem.offset -
+          navScrollCollection[indexOfLast].scrollItem.offset -
+          navScrollCollection[indexOfLast].scrollItem.height / 2) < f3.h
+    ) {
+      if (!this.disable) {
+        this.disable = true;
+        wraperNav.addClass('disable');
       }
-      if (offer === true) {
-        $('#offer-nav-mobile-top-img').html(sectionArray[bestIndex].img.clone());
-        $('#offer-nav-mobile-top-title').html(sectionArray[bestIndex].title);
-      }
-      else if (career === true) {
-        $('#career-nav-mobile-top-title').html(sectionArray[bestIndex].title);
+    }
+    else {
+      if (this.disable) {
+        this.disable = false;
+        wraperNav.removeClass('disable');
       }
     }
   }
 
-  sectionResize();
+  function setCurrentAnchor() {
+    const bestIndex = navScrollCollection.reduce(
+      function(
+        bestIndex,
+        current,
+        i,
+        arr
+      ) {
+        return Math.abs(current.scrollItem.screenPos(0.5) - 0.5) <
+        Math.abs(arr[bestIndex].scrollItem.screenPos(0.5) - 0.5)
+          ? i
+          : bestIndex;
+      },
+      0
+    );
+    navScrollCollection.map(function(current, i) {
+      current.$t.removeClass('current');
+    });
+    if (navScrollCollection[bestIndex] !== 0) {
+      navScrollCollection[bestIndex].$t.addClass('current');
+    }
+    if (this.onScroll !== undefined) {
+      this.onScroll.call(this, this);
+    }
+  }
 
   $(window)
-    .load(sectionCurrent)
-    .on('scroll', throttle(100, sectionCurrent));
+    .on('load', () => {
+      setCurrentAnchor();
+      checkIsAllOnScreen();
+    })
+    .on('scroll', throttle(100, setCurrentAnchor))
+    .on('resize', checkIsAllOnScreen);
 
-  window.addEventListener('afterLayoutChange', sectionResize);
+  window.addEventListener('afterLayoutChange', setCurrentAnchor);
+
+  return function(_wraperNav, sectionNav, section, options) {
+    wraperNav = $(_wraperNav);
+    wraperNav.find(sectionNav).map(function() {
+      const title = $(this).data('anchor');
+      const anchor = $(section).filter(function() {
+        return $(this).data('ref') === title;
+      });
+      navScroll = new NavScroll(
+        $(this),
+        navScrollCollection.length,
+        anchor,
+        title,
+        $(this).find('img'),
+        options
+      );
+      navScrollCollection.push(navScroll);
+    });
+    return navScroll;
+  };
 })();
+
+createAnchorScroll('#nav', '.nav-single', '.anchor'); //delete on production
