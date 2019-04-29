@@ -1,0 +1,92 @@
+/*----- lazy cakes -----*/
+.lazy-cake {
+	background-color:#555;
+	position:relative;
+}
+.lazy-cake .cake {
+	position:relative;
+	z-index:1;
+	width:100%;
+	transition: opacity .3s;
+	opacity:0;
+}
+.lazy-cake.show-lb {
+	cursor:pointer;
+}
+.lazy-cake.show-lb .cake {
+	transition:.3s;
+	background-size:100%;
+}
+.lazy-cake.show-lb:hover .cake {
+	background-size:115%;
+}
+.lazy-cake-temp {
+	position:absolute;
+	top:0;
+	left:0;
+	width:1px;
+	height:1px;
+	opacity:0;
+}
+#loaded {
+	position:fixed;
+	top:0;
+	left:0;
+	right:0;
+	background-color:#333;
+	color:#fff;
+	z-index:1;
+	text-align:center;
+	font-size:.79em;
+}
+
+/*----- loading -----*/
+#overlay {
+	position:fixed;
+	top:0;
+	right:0;
+	bottom:0;
+	left:0;
+	background-color:#333;
+	z-index:101;
+}
+@keyframes load {
+	0% {
+		transform:rotate(0deg);
+		stroke-dasharray:20 64;
+		stroke-width:20;
+	}
+	25% {
+		stroke-dasharray:30 54;
+	}
+	50% {
+		stroke-dasharray:0 251;
+		stroke-width:5;
+	}
+	70% {
+		stroke-dasharray:30 54;
+	}
+	100% {
+		transform:rotate(360deg);
+		stroke-dasharray:20 64;
+		stroke-width:20;
+	}
+}
+.loading-icon {
+	width:2.5em;
+	position:absolute;
+	top:50%;
+	left:50%;
+	margin:-1.25em;
+}
+.loading-icon path {
+	fill:none;
+	stroke:rgba(255,255,255,1);
+	stroke-linecap:round;
+	transform-origin:50% 50%;
+	opacity:0;
+}
+.loading .loading-icon path:nth-child(1) {
+	opacity:1;
+	animation:load 2s infinite;
+}

@@ -97,6 +97,7 @@ const createAnchorScroll = (function() {
   window.addEventListener('afterLayoutChange', setCurrentAnchor);
 
   return function(_wraperNav, sectionNav, section, options) {
+    if (options === undefined) options = {};
     wraperNav = $(_wraperNav);
     wraperNav.find(sectionNav).map(function() {
       const title = $(this).data('anchor');

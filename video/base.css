@@ -1,0 +1,72 @@
+/*----- VIDEO -----*/
+.video-container {
+    position: relative;
+  }
+  
+  .video-container video {
+    width: 100%;
+    display: block;
+  }
+  
+  .video-container .video-frame {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    padding: 0;
+    height: auto;
+  }
+  
+  .video-play {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    z-index: 1;
+  }
+  
+  .video-play svg {
+    position: absolute;
+    width: 8em;
+    transition: 1s;
+  }
+  
+  .video-play path, .video-play circle {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 1.5;
+    transition: 2s;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  
+  .video-play path {
+    stroke-dasharray: 180;
+  }
+  
+  .video-play circle {
+    stroke-dasharray: 320;
+  }
+  
+  .video-play:hover path {
+    stroke-dashoffset: 360;
+  }
+  
+  .video-play:hover circle {
+    stroke-dashoffset: 640;
+  }
+  
+  .video-play.hidden {
+    opacity: 0;
+  }
+  
+  .video-play.hidden path {
+    stroke-dashoffset: 180;
+  }
+  
+  .video-play.hidden circle {
+    stroke-dashoffset: 360;
+  }
