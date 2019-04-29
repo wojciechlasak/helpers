@@ -1,0 +1,38 @@
+.slider-single {
+  transition: 1s;
+}
+
+.slider-single {
+  opacity: 0;
+}
+
+.slider-single.current-slide {
+  opacity: 1 !important;
+}
+
+.fade-slider-wrap {
+  position: relative;
+}
+
+.slider-bullets {
+  position: absolute;
+  display: flex;
+  right: 4em;
+}
+
+.slider-bullet {
+  border: 2px solid #333;
+  width: 1em;
+  height: 1em;
+  z-index: 10;
+  margin-left: 0.5em;
+  cursor: pointer;
+}
+
+.slider-bullet:hover {
+  background-color: #eee;
+}
+
+.slider-bullet.bullet-current {
+  background-color: #333;
+}
