@@ -2,10 +2,30 @@
 version:	1.0
 */
 
-fadeSliders = [];
 (function() {
+  fadeSliders = [];
   class Slider {
     constructor(element) {
+      this.applyCss(element);
+      this.interval = this.element.data('interval');
+      this.interval = this.interval !== undefined ?
+        parseInt(this.interval) : false;
+      if (this.interval) {
+        this.intervalHandle = setInterval(this.next.bind(this), this.interval);
+      }
+
+      this.h = 0;
+      this.c = 0;
+      this.id = this.element.attr('id');
+      this.scrollItem = createScrollItem(this.element);
+      this.refresh();
+
+      this.slides.eq(0).addClass('current-slide');
+      this.prepareArrows();
+      this.prepareBullets();
+    }
+
+    applyCss(element) {
       this.element = $(element);
       this.bar = $(document.createElement('div'))
         .addClass('slider-bar')
@@ -18,14 +38,12 @@ fadeSliders = [];
           width: '100%',
         })
         .appendTo(this.bar);
-      this.interval = this.element.data('interval');
-      this.interval = this.interval !== void 0 ? parseInt(this.interval) : false;
-      if (this.interval) {
-        this.intervalHandle = setInterval(this.next.bind(this), this.interval);
-      }
+    }
+
+    prepareArrows() {
       this.arrows = this.element.data('arrows');
       if (this.arrows === undefined) {
-        this.arrows = this.element.find('.arrows');
+        this.arrows = this.element.find('.slider-arrows');
       }
       else {
         this.arrows = $(this.arrows);
@@ -33,19 +51,22 @@ fadeSliders = [];
       if (this.arrows.length > 0) {
         this.left = this.arrows.find('.slider-left');
         this.right = this.arrows.find('.slider-right');
-        this.left.click(function() {
+        this.left.click(() => {
           if (this.interval) {
             clearInterval(this.intervalHandle);
           }
           this.prev();
-        }.bind(this));
-        this.right.click(function() {
+        });
+        this.right.click(() => {
           if (this.interval) {
             clearInterval(this.intervalHandle);
           }
           this.next();
-        }.bind(this));
+        });
       }
+    }
+
+    prepareBullets() {
       this.bullets = this.element.data('bullets');
       if (this.bullets === undefined) {
         const bulletList = $(document.createElement('div'))
@@ -71,30 +92,29 @@ fadeSliders = [];
           });
         });
       }
-      this.h = 0;
-      this.c = 0;
-      this.id = this.element.attr('id');
-      this.refresh();
-      // hide unnecessary bullets
       if (this.bullets.length <= 1) {
         this.bullets.hide(0);
       }
-      // mark the first bullet and slide as current
-      this.bullets[0].addClass('bullet-current');
-      this.slides.eq(0).addClass('current-slide');
+      else {
+        this.bullets[0].addClass('bullet-current');
+      }
     }
+
     refresh() {
       this.bar.css({height: 0});
       let h = 0;
-      this.slides.each(function() {
-        h = Math.max($(this).height(), h);
+      this.slides.each((index, element) => {
+        h = Math.max($(element).height(), h);
       });
       this.h = h;
       this.setHeight();
+      this.scrollItem._onResize();
     }
+
     setHeight() {
       this.bar.css({height: this.h});
     }
+
     goTo(n) {
       if (this.c !== n) {
         const previous = this.c;
@@ -103,15 +123,22 @@ fadeSliders = [];
         this.bullets[previous].removeClass('bullet-current');
         this.bullets[n].addClass('bullet-current');
         this.c = n;
-        window.dispatchEvent(new CustomEvent('fadeSliderChange', {detail: {slider: this, prev: previous}}));
+        window.dispatchEvent(new CustomEvent('fadeSliderChange', {
+          detail: {slider: this, prev: previous},
+        }));
       }
     }
+
     onLoad() {
-      window.dispatchEvent(new CustomEvent('fadeSliderChange', {detail: {slider: this, prev: -1}}));
+      window.dispatchEvent(new CustomEvent('fadeSliderChange', {
+        detail: {slider: this, prev: -1},
+      }));
     }
+
     next() {
       this.goTo((this.c + 1) % this.slides.length);
     }
+
     prev() {
       let target = this.c - 1;
       if (target < 0)
@@ -121,11 +148,11 @@ fadeSliders = [];
   }
 
 
-  $('.fade-slider-wrap').each(function(index) {
-    const slider = new Slider(this);
+  $('.fade-slider-wrap').each((index, element) => {
+    const slider = new Slider(element);
     if (
-      slider.id === void 0 ||
-			fadeSliders[slider.id] !== void 0
+      slider.id === undefined ||
+			fadeSliders[slider.id] !== undefined
     ) {
       slider.id = index;
     }
@@ -146,4 +173,25 @@ fadeSliders = [];
 
   $(window).on('load', load);
   window.addEventListener('layoutChange', refresh);
+  window.addEventListener('keydown', event => {
+    if (event.which !== 39 && event.which !== 37) return;
+    let closest;
+    let closestDiff = Infinity;
+    for (const slider of fadeSliders) {
+      const diff = Math.abs(slider.scrollItem.screenPos(0.5) - 0.5);
+      if (diff < closestDiff) {
+        closestDiff = diff;
+        closest = slider;
+      }
+      else {
+        break;
+      }
+    }
+    if (event.which === 39) {
+      closest.next();
+    }
+    else if (event.which === 37) {
+      closest.prev();
+    }
+  });
 })();
