@@ -6,17 +6,22 @@
 		<meta name="viewport" content="width=device-width" />
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 		<link rel="stylesheet" type="text/css" href="./style.css" />
+		<link rel="stylesheet" type="text/css" href="./base.css" />
 	</head>
 	<body>
-		<?php $dir=array_diff(scandir(__DIR__),array(".git",".",".."));
+		<div class="links">
+			<?php
+			$dir = array_diff(scandir(__DIR__), array(".git", ".", ".."));
 			$dir = array_filter($dir, function($element){
-				return is_dir(__DIR__."/".$element) && file_exists(__DIR__."/".$element."/index.php");
+				if(!is_dir(__DIR__ . "/" . $element)) return false;
+				return file_exists(__DIR__ . "/" . $element . "/index.php");
 			});
-			foreach ($dir as $value) {  ?>
-				<a href="<?=$value?>"><?=$value?></a>
-			<?php }
-		?>
-		
+			foreach ($dir as $value) { ?>
+				<div class="link">
+					<a href="<?=$value?>"><?=$value?></a>
+				</div>
+			<?php } ?>
+		</div>
 		<script src="f3.js"></script>
 	</body>
 </html>

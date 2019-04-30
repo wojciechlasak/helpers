@@ -1,0 +1,22 @@
+body {
+  font-family: sans-serif;
+  background-color: #eee;
+  color: #444;
+}
+
+.links {
+  padding: 3em;
+}
+
+.link a {
+  display: inline-block;
+  padding: .25em .5em;
+  color: inherit;
+  text-decoration: none;
+  transition: .2s;
+  font-weight:700;
+}
+
+.link a:hover {
+  color: #999;
+}
