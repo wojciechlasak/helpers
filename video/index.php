@@ -11,8 +11,8 @@
 
 	</head>
 	<body>
-   <div class="video-container">
-			<video src="big_buck_bunny.mp4" muted></video>
+   	<div class="video-container">
+			<video src="big_buck_bunny.mp4" muted preload="none"></video>
 			<div class="video-frame lazy-cake rel" data-bg="pieczywo.jpg">
 				<div class="cake" style="padding:0;height:auto;position:absolute;top:0;right:0;bottom:0;left:0;"></div>
 				<svg class="loading-icon" viewBox="0 0 100 100"><path d="M10 50a40 40 0 1 1 0 0.1" /></svg>

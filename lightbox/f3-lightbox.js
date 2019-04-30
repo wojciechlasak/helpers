@@ -1,26 +1,23 @@
-// lightbox
-(function() {
-  function showLb(i, e) {
-    var t = this;
-    t.el = $(e);
-    t.id = i;
-    t.src = t.el.data('full-image');
-    t.wasLoaded = false;
+const createLightbox = (function() {
+  class SingleLightbox {
+    constructor(i, e, parent) {
+      this.parent = parent;
+      this.$element = $(e);
+      this.id = i;
+      this.imageSrc = this.$element.data('full-image');
+      this.wasLoaded = false;
 
-    t.el.click(function() {
-      t.load();
-    });
-    t.resize = function() {
-      if ($('#lb-container').hasClass('active')) t.load();
-      else closeLb();
-    };
+      this.$element.on('click', () => {
+        this.parent.active();
+        this.load();
+      });
+    }
 
-    t.load = function() {
-      currentLb = t.id;
-      checkLb();
-      $('#lb-container').addClass('active');
-      var h = t.el.data('height');
-      var w = t.el.data('width');
+    load() {
+      this.parent.currentLb = this.id;
+      this.parent.checkLb();
+      let h = this.$element.data('height');
+      let w = this.$element.data('width');
       if (w / h > f3.w / f3.h) {
         h *= f3.w / w;
         w = f3.w;
@@ -31,128 +28,183 @@
       }
       h *= 0.95;
       w *= 0.95;
-      lb.addClass('loading').css({
+      this.parent.$containerIn.addClass('loading').css({
         left: (f3.w - w) / 2,
         top: (f3.h - h) / 2,
         width: w,
         height: h,
       });
-      if (t.wasLoaded) {
-        t.show();
+      if (this.wasLoaded) {
+        this.show();
       }
       else {
-        lb.find('.lazy-cake-temp')
-          .attr({src: t.src})
-          .load(function() {
-            if (currentLb === t.id) {
-              t.show();
+        this.parent.$containerIn
+          .find('.lazy-cake-temp')
+          .attr({src: this.imageSrc})
+          .load(() => {
+            if (this.parent.currentLb === this.id) {
+              this.show();
             }
-            t.wasLoaded = true;
+            this.wasLoaded = true;
           });
       }
-    };
+    }
 
-    t.show = function() {
-      lb.find('.cake').css({
-        backgroundImage: 'url(' + t.src + ')',
+    resize() {
+      if (this.parent.onScreen) this.load();
+      else this.parent.deactive();
+    }
+
+    show() {
+      this.parent.$containerIn.find('.cake').css({
+        backgroundImage: 'url(' + this.imageSrc + ')',
       });
-      setTimeout(function() {
-        if (currentLb === t.id) {
-          lb.find('.cake').css({
+      setTimeout(() => {
+        if (this.parent.currentLb === this.id) {
+          this.parent.$containerIn.find('.cake').css({
             opacity: 1,
           });
-          lb.removeClass('loading');
+          this.parent.$containerIn.removeClass('loading');
         }
       }, 300);
-    };
+    }
   }
-  var lb = $('#lb');
-  var currentLb = 0;
-  var isLeftHidden = false;
-  var isRightHidden = false;
-  var slbs = $('.show-lb').map(function(i, e) {
-    return new showLb(i, e);
-  });
 
-  $('#lb-container').click(closeLb);
+  class Lightbox {
+    constructor(options) {
+      this.options = options;
+      this.$container = $(this.options.container);
+      this.$containerIn = this.$container.find('.lb');
+      this.$items = $(this.options.items);
+      this.arrows = this.options.arrows;
+      this.onChange = this.options.onChange;
+      this.onScreen = false;
+      this.lightboxCollection = [];
 
-  function closeLb() {
-    $('#lb-container').removeClass('active');
-    setTimeout(function() {
-      if (!$('#lb-container').hasClass('active')) {
-        h = 100;
-        w = 100;
-        lb.css({
-          left: (f3.w - w) / 2,
-          top: (f3.h - h) / 2,
-          width: w,
-          height: h,
-        });
-        resetLb();
+      this.currentLb = 0;
+      if (this.arrows) {
+        this.arrowLeft = this.$container.find('.arrow-left');
+        this.arrowRight = this.$container.find('.arrow-right');
+        this.LeftHidden = false;
+        this.isRightHidden = false;
       }
-    }, 300);
-  }
-  function resetLb() {
-    lb.find('.cake').css({
-      backgroundImage: 'none',
-    });
-  }
-  function nextLb() {
-    checkLb();
-    if ($('#lb-container').hasClass('active') && !isRightHidden) {
-      resetLb();
-      slbs[currentLb + 1].load();
+
+      this.$items.map((i, e) => {
+        let singleLb = new SingleLightbox(i, e, this);
+        this.lightboxCollection.push(singleLb);
+      });
+
+      this.$container.on('click', () => {
+        this.deactive();
+      });
+
+      if (this.arrows) {
+        $(document).on('keyup', e => {
+          if (e.keyCode === 27) this.deactive();
+          else if (e.keyCode === 37) this.prevLb();
+          else if (e.keyCode === 39) this.nextLb();
+        });
+
+        this.arrowLeft.click(e => {
+          e.stopPropagation();
+          this.prevLb();
+        });
+        this.arrowRight.click(e => {
+          e.stopPropagation();
+          this.nextLb();
+        });
+
+        $(window).on('wheel', e => {
+          if (e.originalEvent.deltaX > 0) this.prevLb();
+          if (e.originalEvent.deltaX < 0) this.nextLb();
+        });
+      }
+
+      window.addEventListener('layoutChange', () => {
+        this.lightboxCollection.map(function(e, i) {
+          e.resize();
+        });
+      });
     }
-  }
-  function prevLb() {
-    checkLb();
-    if ($('#lb-container').hasClass('active') && !isLeftHidden) {
-      resetLb();
-      slbs[currentLb - 1].load();
+
+    active() {
+      if (!this.onScreen) {
+        this.onScreen = true;
+        this.$container.addClass('active');
+      }
+    }
+
+    deactive() {
+      if (this.onScreen) {
+        this.onScreen = false;
+        this.$container.removeClass('active');
+      }
+    }
+
+    resetLb() {
+      this.$containerIn.find('.cake').css({
+        backgroundImage: 'none',
+      });
+    }
+
+    nextLb() {
+      this.checkLb();
+      if (this.onScreen && !this.isRightHidden) {
+        this.lightboxCollection[this.currentLb + 1].load();
+      }
+    }
+    prevLb() {
+      this.checkLb();
+      if (this.onScreen && !this.isLeftHidden) {
+        this.lightboxCollection[this.currentLb - 1].load();
+      }
+    }
+
+    checkLb() {
+      if (this.arrows) {
+        if (this.currentLb + 1 === this.lightboxCollection.length) {
+          this.isRightHidden = true;
+          this.arrowRight.addClass('hidden');
+        }
+        else if (this.isRightHidden) {
+          this.isRightHidden = false;
+          this.arrowRight.removeClass('hidden');
+        }
+        if (this.currentLb === 0) {
+          this.isLeftHidden = true;
+          this.arrowLeft.addClass('hidden');
+        }
+        else if (this.isLeftHidden) {
+          this.isLeftHidden = false;
+          this.arrowLeft.removeClass('hidden');
+        }
+      }
     }
   }
 
-  function checkLb() {
-    if (currentLb + 1 === slbs.length) {
-      isRightHidden = true;
-      $('#lb-right').addClass('hidden');
-    }
-    else if (isRightHidden) {
-      isRightHidden = false;
-      $('#lb-right').removeClass('hidden');
-    }
-    if (currentLb === 0) {
-      isLeftHidden = true;
-      $('#lb-left').addClass('hidden');
-    }
-    else if (isLeftHidden) {
-      isLeftHidden = false;
-      $('#lb-left').removeClass('hidden');
-    }
-  }
-
-  $(document).keyup(function(e) {
-    if (e.keyCode === 27) closeLb();
-    else if (e.keyCode === 37) prevLb();
-    else if (e.keyCode === 39) nextLb();
-  });
-  $('#lb-left').click(function(e) {
-    e.stopPropagation();
-    prevLb();
-  });
-  $('#lb-right').click(function(e) {
-    e.stopPropagation();
-    nextLb();
-  });
-
-  $(window).on('wheel', function(e) {
-    if (e.originalEvent.deltaX > 0) prevLb();
-    if (e.originalEvent.deltaX < 0) nextLb();
-  });
-
-  window.addEventListener('layoutChange', function() {
-    slbs.map(function(i, e) {
-      e.resize();
-    });
-  });
+  return function(options) {
+    const lb = new Lightbox(options);
+    return lb;
+  };
 })();
+
+createLightbox({
+  items: '.element-lb',
+  container: '#lb-container',
+  onChange: function() {},
+  arrows: true,
+}); //delete on production
+
+createLightbox({
+  items: '.tmep',
+  container: '#lb-container2',
+  onChange: function() {},
+  arrows: false,
+}); //delete on production
+
+createLightbox({
+  items: '.element-lb3',
+  container: '#lb-container3',
+  onChange: function() {},
+  arrows: true,
+}); //delete on production

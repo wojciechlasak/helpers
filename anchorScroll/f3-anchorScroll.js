@@ -25,7 +25,7 @@ const createAnchorScroll = (function() {
     let scrollItem = navScrollCollection[id].scrollItem;
     let anchorTop = scrollItem.offset;
     anchorTop = Math.min(
-      anchorTop - 50,
+      anchorTop,
       anchorTop - f3.h / 2 + scrollItem.height / 2,
       f3.documentH - f3.h
     );
@@ -104,7 +104,7 @@ const createAnchorScroll = (function() {
       const anchor = $(section).filter(function() {
         return $(this).data('ref') === title;
       });
-      navScroll = new NavScroll(
+      const navScroll = new NavScroll(
         $(this),
         navScrollCollection.length,
         anchor,

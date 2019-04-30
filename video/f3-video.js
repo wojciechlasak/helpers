@@ -15,19 +15,3 @@ $('.video-play').click(function() {
     $t.removeClass('hidden');
   }
 });
-
-
-
-$('.video-slider').each(function() {
-  this.addEventListener('videoStop', function() {
-    let videoPlay = $(this).find('.video-play');
-    let video = $(this).find('video');
-
-    video.each(function() {
-      this.pause();
-    });
-    videoPlay.each(function() {
-      $(this).removeClass('hidden');
-    });
-  });
-});

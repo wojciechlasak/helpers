@@ -1,0 +1,82 @@
+/*----- light box -----*/
+.lb-container {
+	position:fixed;
+	top:0;
+	width:100%;
+	bottom:0;
+	left:-100%;
+	background-color:rgba(255,255,255,.7);
+	z-index:20;
+	transition:left .3s;
+}
+.lb-container.active {
+	left:0;
+}
+.lb {
+	position:absolute;
+	background-color:#333;
+	overflow:hidden;
+	transition:.3s;
+}
+.lb .cake {
+	position:absolute;
+	top:0;
+	right:0;
+	bottom:0;
+	left:0;
+	height:auto;
+	padding:0;
+	transition:opacity .3s;
+}
+.lb {overflow:visible;}
+.arrow-left,
+.arrow-right {
+	position:absolute;
+	top:50%;
+	background-color:#fff;
+	margin:-1em;
+	width:2em;
+	height:2em;
+	border-radius:50%;
+	cursor:pointer;
+}
+.arrow-left {left:0;}
+.arrow-right {right:0;}
+.arrow-left svg,
+.arrow-right svg {
+	display:block;
+	width:80%;
+	margin:10%;
+}
+.arrow-left path,
+.arrow-right path {
+	fill:none;
+	stroke-width:5;
+	stroke:#000;
+	stroke-dasharray:200 200;
+	transition:.3s;
+	stroke-linecap:round;
+	stroke-linejoin:round;
+}
+.arrow-left path:nth-child(1),
+.arrow-right path:nth-child(1) {stroke-dasharray:40 200;}
+.arrow-left path:nth-child(2),
+.arrow-right path:nth-child(2) {stroke-dasharray:50 95;}
+.arrow-left:hover path:nth-child(1),
+.arrow-right:hover path:nth-child(1) {stroke-dasharray:100 200;}
+.arrow-left:hover path:nth-child(2),
+.arrow-right:hover path:nth-child(2) {stroke-dasharray:82 30;}
+
+.arrow-left.hidden,
+.arrow-right.hidden{
+	display:none;
+}
+
+
+
+#lb-container2 .lb {
+	width:70%;
+	left:0;
+	right:0;
+	margin:0 auto;
+}
