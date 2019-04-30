@@ -30,7 +30,7 @@
 }
 
 .slider-bullet {
-  border: 2px solid #333;
+  border: 2px solid #444;
   width: 1em;
   height: 1em;
   z-index: 10;
@@ -43,5 +43,5 @@
 }
 
 .slider-bullet.bullet-current {
-  background-color: #333;
+  background-color: #444;
 }
