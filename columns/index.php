@@ -10,7 +10,7 @@
     <link rel="stylesheet" type="text/css" href="./columns.css" />
   </head>
   <body>
-    <div class="columns-container flex" data-reorder="false">
+    <div class="columns-container flex flex-mobile" data-reorder="false">
       <div class="single-column col3">
         <div class="column-section">
           1. Cupiditate expedita eum provident quisquam repudiandae et repellendus hic dolore repellat ipsam praesentium pariatur illo, voluptatum adipisci voluptatem, alias aliquid? Dicta ratione impedit nisi ullam natus, commodi ipsam quisquam, aliquam in aliquid at reprehenderit laudantium et. Nulla nisi ab mollitia harum nihil. Sint maxime mollitia nobis, cum fugit vitae expedita, unde at ullam ipsam illum nisi voluptate eveniet aut sunt dolorum maiores facere architecto repellendus repellat inventore sequi? Doloribus maxime consectetur ab eum tenetur, et excepturi nobis molestias reiciendis repudiandae? Non, totam doloremque. Recusandae, esse voluptatem. Illo culpa, consequuntur fugit quos et, molestias dignissimos laborum vero consectetur repudiandae quam accusamus cumque dolorum nam dolor tempora quidem iste voluptatum, consequatur excepturi maiores! Dolores, error nihil quaerat, aut iusto odit necessitatibus, soluta itaque modi quod obcaecati vel! Cumque necessitatibus tempora et pariatur eum obcaecati nemo unde ducimus dolorem accusantium accusamus, ipsa soluta itaque dolore laboriosam minus officia expedita. Molestias omnis quia perspiciatis?
