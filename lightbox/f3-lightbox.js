@@ -4,69 +4,11 @@ const createLightbox = (function() {
       this.parent = parent;
       this.$element = $(e);
       this.id = i;
-      this.imageSrc = this.$element.data('full-image');
-      this.wasLoaded = false;
+      this.onScreen = false;
 
       this.$element.on('click', () => {
-        this.parent.active();
-        this.load();
+        this.parent.active(this.id);
       });
-    }
-
-    load() {
-      this.parent.currentLb = this.id;
-      this.parent.checkLb();
-      let h = this.$element.data('height');
-      let w = this.$element.data('width');
-      if (w / h > f3.w / f3.h) {
-        h *= f3.w / w;
-        w = f3.w;
-      }
-      else {
-        w *= f3.h / h;
-        h = f3.h;
-      }
-      h *= 0.95;
-      w *= 0.95;
-      this.parent.$containerIn.addClass('loading').css({
-        left: (f3.w - w) / 2,
-        top: (f3.h - h) / 2,
-        width: w,
-        height: h,
-      });
-      if (this.wasLoaded) {
-        this.show();
-      }
-      else {
-        this.parent.$containerIn
-          .find('.lazy-cake-temp')
-          .attr({src: this.imageSrc})
-          .load(() => {
-            if (this.parent.currentLb === this.id) {
-              this.show();
-            }
-            this.wasLoaded = true;
-          });
-      }
-    }
-
-    resize() {
-      if (this.parent.onScreen) this.load();
-      else this.parent.deactive();
-    }
-
-    show() {
-      this.parent.$containerIn.find('.cake').css({
-        backgroundImage: 'url(' + this.imageSrc + ')',
-      });
-      setTimeout(() => {
-        if (this.parent.currentLb === this.id) {
-          this.parent.$containerIn.find('.cake').css({
-            opacity: 1,
-          });
-          this.parent.$containerIn.removeClass('loading');
-        }
-      }, 300);
     }
   }
 
@@ -76,17 +18,25 @@ const createLightbox = (function() {
       this.$container = $(this.options.container);
       this.$containerIn = this.$container.find('.lb');
       this.$items = $(this.options.items);
-      this.arrows = this.options.arrows;
-      this.onChange = this.options.onChange;
+      this.hasArrows = this.options.hasArrows === undefined ? false : this.options.hasArrows;
+      this.hasExit = this.options.hasExit === undefined ? false : this.options.hasExit;
       this.onScreen = false;
       this.lightboxCollection = [];
-
       this.currentLb = 0;
-      if (this.arrows) {
+
+      if (this.hasArrows) {
         this.arrowLeft = this.$container.find('.arrow-left');
         this.arrowRight = this.$container.find('.arrow-right');
-        this.LeftHidden = false;
+        this.isLeftHidden = false;
         this.isRightHidden = false;
+      }
+
+      if (this.hasExit) {
+        this.exit = this.$container.find('.close-lb');
+
+        this.exit.on('click', () => {
+          this.deactive();
+        });
       }
 
       this.$items.map((i, e) => {
@@ -98,10 +48,17 @@ const createLightbox = (function() {
         this.deactive();
       });
 
-      if (this.arrows) {
+      this.$containerIn.on('click', e => {
+        e.stopPropagation();
+      });
+
+      $(document).on('keyup', e => {
+        if (e.keyCode === 27) this.deactive();
+      });
+
+      if (this.hasArrows) {
         $(document).on('keyup', e => {
-          if (e.keyCode === 27) this.deactive();
-          else if (e.keyCode === 37) this.prevLb();
+          if (e.keyCode === 37) this.prevLb();
           else if (e.keyCode === 39) this.nextLb();
         });
 
@@ -113,24 +70,27 @@ const createLightbox = (function() {
           e.stopPropagation();
           this.nextLb();
         });
-
-        $(window).on('wheel', e => {
-          if (e.originalEvent.deltaX > 0) this.prevLb();
-          if (e.originalEvent.deltaX < 0) this.nextLb();
-        });
       }
 
       window.addEventListener('layoutChange', () => {
-        this.lightboxCollection.map(function(e, i) {
-          e.resize();
-        });
+        this.resize();
       });
     }
 
-    active() {
+    active(id) {
       if (!this.onScreen) {
         this.onScreen = true;
-        this.$container.addClass('active');
+        this.$container.removeClass('hidden');
+        setTimeout(() => {
+          this.$container.addClass('active');
+        }, 0);
+
+        this.currentLb = id;
+        this.checkArrows();
+
+        if (this.options.onActivate !== undefined) {
+          this.options.onActivate.call(this.lightboxCollection[id]);
+        }
       }
     }
 
@@ -138,30 +98,44 @@ const createLightbox = (function() {
       if (this.onScreen) {
         this.onScreen = false;
         this.$container.removeClass('active');
+        setTimeout(() => {
+          this.$container.addClass('hidden');
+        }, 300);
+        if (this.options.onDeactive !== undefined) {
+          this.options.onDeActivate.call(this);
+        }
       }
     }
 
-    resetLb() {
-      this.$containerIn.find('.cake').css({
-        backgroundImage: 'none',
-      });
+    change(id) {
+      this.lightboxCollection[this.currentLb].onScreen = false;
+      this.currentLb = id;
+      this.checkArrows();
+
+      if (this.options.onChange !== undefined) {
+        this.options.onChange.call(this.lightboxCollection[this.currentLb]);
+      }
+    }
+
+    resize() {
+      if (this.options.onResize !== undefined) {
+        this.options.onResize.call(this.lightboxCollection[this.currentLb]);
+      }
     }
 
     nextLb() {
-      this.checkLb();
       if (this.onScreen && !this.isRightHidden) {
-        this.lightboxCollection[this.currentLb + 1].load();
+        this.change(this.currentLb + 1);
       }
     }
     prevLb() {
-      this.checkLb();
       if (this.onScreen && !this.isLeftHidden) {
-        this.lightboxCollection[this.currentLb - 1].load();
+        this.change(this.currentLb - 1);
       }
     }
 
-    checkLb() {
-      if (this.arrows) {
+    checkArrows() {
+      if (this.hasArrows && this.onScreen) {
         if (this.currentLb + 1 === this.lightboxCollection.length) {
           this.isRightHidden = true;
           this.arrowRight.addClass('hidden');
@@ -188,23 +162,95 @@ const createLightbox = (function() {
   };
 })();
 
+function onImageChange() {
+  var imageSrc =
+    imageSrc === undefined ? this.$element.data('full-image') : imageSrc;
+
+  this.parent.$containerIn.find('.cake').css({
+    backgroundImage: 'none',
+  });
+
+  this.parent.$containerIn.addClass('loading');
+
+  this.parent.$containerIn
+    .find('.lazy-cake-temp')
+    .attr({src: imageSrc})
+    .load(() => {
+      this.parent.$containerIn.find('.cake').css({
+        backgroundImage: 'url(' + imageSrc + ')',
+      });
+      setTimeout(() => {
+        if (this.parent.currentLb === this.id) {
+          this.parent.$containerIn.find('.cake').css({
+            opacity: 1,
+          });
+          this.parent.$containerIn.removeClass('loading');
+        }
+      }, 300);
+    });
+  this.onScreen = true;
+}
+
+function onImageActivate() {
+  onImageResize.call(this);
+  onImageChange.call(this);
+}
+
+function onImageResize() {
+  var h = h === undefined ? this.$element.data('height') : h;
+  var w = w === undefined ? this.$element.data('width') : w;
+
+  if (w / h > f3.w / f3.h) {
+    h *= f3.w / w;
+    w = f3.w;
+  }
+  else {
+    w *= f3.h / h;
+    h = f3.h;
+  }
+  h *= 0.95;
+  w *= 0.95;
+  this.parent.$containerIn.css({
+    left: (f3.w - w) / 2,
+    top: (f3.h - h) / 2,
+    width: w,
+    height: h,
+  });
+}
+
+function onTextChange() {
+  var $texts =
+    $texts === undefined ? this.parent.$container.find('.text') : $texts;
+
+  $texts.removeClass('show');
+  this.parent.$container.find(`#text-${this.id + 1}`).addClass('show');
+}
+
 createLightbox({
-  items: '.element-lb',
-  container: '#lb-container',
-  onChange: function() {},
-  arrows: true,
+  items: '.element-lb1',
+  container: '#lb-container1',
+  onChange: onImageChange,
+  onActivate: onImageActivate,
+  //onDeactivate: function() {},
+  onResize: onImageResize,
+  hasArrows: true,
 }); //delete on production
 
 createLightbox({
-  items: '.tmep',
+  items: '.element-lb2',
   container: '#lb-container2',
-  onChange: function() {},
-  arrows: false,
+  onChange: onTextChange,
+  onActivate: onTextChange,
+  hasArrows: true,
+  hasExit: true,
+
 }); //delete on production
 
 createLightbox({
   items: '.element-lb3',
   container: '#lb-container3',
-  onChange: function() {},
-  arrows: true,
+  onChange: onImageChange,
+  onActivate: onImageActivate,
+  onResize: onImageResize,
+  hasArrows: true,
 }); //delete on production

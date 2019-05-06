@@ -12,6 +12,9 @@
 .lb-container.active {
 	left:0;
 }
+.lb-container.hidden{
+	display:none;
+}
 .lb {
 	position:absolute;
 	background-color:#333;
@@ -72,11 +75,43 @@
 	display:none;
 }
 
-
+.close-lb {
+	position:absolute;
+	top:.75em;
+	right:.75em;
+	width:1.3em;
+	height:1.3em;
+	padding:.25em;
+	border-radius:50%;
+	cursor:pointer;
+	transition:.2s;
+}
+.close-lb path {
+	stroke:#fff;
+	stroke-width:10;
+	transition:.2s;
+}
+.close-lb:hover {
+	background-color:#f55;
+}
+.close-lb:hover path {
+	stroke:#fff;
+}
 
 #lb-container2 .lb {
 	width:70%;
 	left:0;
 	right:0;
 	margin:0 auto;
+	color:#fff;
+	padding:2.5em;
 }
+
+.text{
+	display: none;
+}
+
+.text.show{
+	display:block;
+}
+
