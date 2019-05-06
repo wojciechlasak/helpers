@@ -34,3 +34,7 @@ class Hoverable {
     this.hasHoveredClass = false;
   }
 }
+
+//delete on production
+new Hoverable($('.arrow-left'));
+new Hoverable($('.arrow-right'));
