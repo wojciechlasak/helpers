@@ -89,5 +89,5 @@ f3.window.load(f3.sizeCheck);
 f3.document.ready(f3.sizeCheck);
 
 function parseInput(input, def) {
-  return void 0 === input ? def : input;
+  return undefined === input ? def : input;
 }
