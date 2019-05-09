@@ -32,7 +32,9 @@
             <div class="column">
               <h1>secondary screen</h1>
               <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quam fugit quos soluta ducimus commodi iusto illo vero ipsa cum distinctio inventore assumenda molestiae saepe nulla nemo, architecto odio modi sequi.</p>
-
+              <p>Incidunt laboriosam optio architecto quo et, ut impedit. Voluptatem modi praesentium optio sequi asperiores quis, voluptas neque. Repudiandae suscipit numquam, voluptatum enim laudantium aperiam animi unde id saepe sed voluptatem?</p>
+              <p>Saepe eius sunt doloribus dolores, iste eos vel maxime voluptates sed numquam nobis vero nulla commodi in placeat eveniet expedita id omnis perferendis vitae odit! Eos voluptates praesentium quis error?</p>
+              <p>Saepe eius sunt doloribus dolores, iste eos vel maxime voluptates sed numquam nobis vero nulla commodi in placeat eveniet expedita id omnis perferendis vitae odit! Eos voluptates praesentium quis error?</p>
             </div>
           </div>
         </div>
