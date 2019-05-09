@@ -20,6 +20,8 @@
       <div class="single-slide flex flex-align-center flex-justify-center">B</div>
       <div class="single-slide flex flex-align-center flex-justify-center">C</div>
     </div>
+    <div class="prev">prev</div>
+    <div class="next">next</div>
 		<script src="./../f3.js"></script>
 		<script src="./../hovered/f3-hovered.js"></script>
 		<script src="./f3-slider.js"></script>

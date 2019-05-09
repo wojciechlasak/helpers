@@ -40,9 +40,10 @@ const createF3Slider = (function() {
         initialSlide: 0,                // id of the initially selected slide
         duration: 300,                  // duration of the sliding animation
         mouseDrag: false,               // allows slider to be dragged with the mouse
+        useKeys: false,                 // changes slides on arrow keys, can be changed later
         // wrap                         selector of the slider wrap
-        // arrowUp                      selector of the up arrow, searched in the whole document
-        // arrowDown                    analogous
+        // arrowPrev                    selector of the up arrow, searched in the whole document
+        // arrowNext                    analogous
         // onActivate                   callback to be called when a slide activates
         // onDeactivate                 analogous
       };
@@ -102,31 +103,46 @@ const createF3Slider = (function() {
     }
 
     prepareArrows() {
-      this.isArrowUpActive = true;
-      this.isArrowDownActive = true;
-      this.arrowUp = $(this.options.arrowUp);
-      this.arrowDown = $(this.options.arrowDown);
-      if (this.options.arrowDown === undefined) {
-        this.arrowDown = this.wrap.find('.arrow-down');
+      this.isarrowPrevActive = true;
+      this.isarrowNextActive = true;
+      this.arrowPrev = $(this.options.arrowPrev);
+      this.arrowNext = $(this.options.arrowNext);
+      if (this.options.arrowNext === undefined) {
+        this.arrowNext = this.wrap.find('.arrow-down');
       }
-      if (this.options.arrowUp === undefined) {
-        this.arrowUp = this.wrap.find('.arrow-up');
+      if (this.options.arrowPrev === undefined) {
+        this.arrowPrev = this.wrap.find('.arrow-up');
       }
 
-      if (this.arrowDown.length > 0) {
-        this.arrowDown.on({
+      if (this.arrowNext.length > 0) {
+        this.arrowNext.on({
           click: this.nextSlide.bind(this),
           touchstart: event => event.stopPropagation(),
         });
-        new Hoverable(this.arrowDown);
+        new Hoverable(this.arrowNext);
       }
-      if (this.arrowUp.length > 0) {
-        this.arrowUp.on({
+      if (this.arrowPrev.length > 0) {
+        this.arrowPrev.on({
           click: this.prevSlide.bind(this),
           touchstart: event => event.stopPropagation(),
         });
-        new Hoverable(this.arrowUp);
+        new Hoverable(this.arrowPrev);
       }
+      $(window).on('keydown', event => {
+        if (!this.options.useKeys) return;
+        if (
+          (!this.options.isVertical && event.which === 39) ||
+          (this.options.isVertical && event.which === 40)
+        ) {
+          this.nextSlide();
+        }
+        else if (
+          (!this.options.isVertical && event.which === 37) ||
+          (this.options.isVertical && event.which === 38)
+        ) {
+          this.prevSlide();
+        }
+      });
     }
 
     prepareWheel() {
@@ -387,25 +403,25 @@ const createF3Slider = (function() {
 
     handleArrows() {
       if (this.currentSlideId === this.slides.length - 1) {
-        if (this.isArrowDownActive) {
-          this.arrowDown.addClass('disabled');
-          this.isArrowDownActive = false;
+        if (this.isarrowNextActive) {
+          this.arrowNext.addClass('disabled');
+          this.isarrowNextActive = false;
         }
       }
-      else if (!this.isArrowDownActive) {
-        this.arrowDown.removeClass('disabled');
-        this.isArrowDownActive = true;
+      else if (!this.isarrowNextActive) {
+        this.arrowNext.removeClass('disabled');
+        this.isarrowNextActive = true;
       }
 
       if (this.currentSlideId === 0) {
-        if (this.isArrowUpActive) {
-          this.arrowUp.addClass('disabled');
-          this.isArrowUpActive = false;
+        if (this.isarrowPrevActive) {
+          this.arrowPrev.addClass('disabled');
+          this.isarrowPrevActive = false;
         }
       }
-      else if (!this.isArrowUpActive) {
-        this.arrowUp.removeClass('disabled');
-        this.isArrowUpActive = true;
+      else if (!this.isarrowPrevActive) {
+        this.arrowPrev.removeClass('disabled');
+        this.isarrowPrevActive = true;
       }
     }
   }
@@ -498,10 +514,16 @@ createF3Slider({
   wrap: '#slider-1',
   slideOnWheel: true,
   mouseDrag: true,
+  useKeys: true,
+  arrowPrev: '.prev',
+  arrowNext: '.next',
 });
 createF3Slider({
   wrap: '#slider-2',
   isVertical: true,
   slideOnWheel: true,
   mouseDrag: true,
+  useKeys: true,
+  arrowPrev: '.prev',
+  arrowNext: '.next',
 });
