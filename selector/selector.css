@@ -1,0 +1,56 @@
+.select-wrap {
+  overflow: hidden;
+  position: relative;
+  transition: .3s;
+  width: 20em;
+  margin: 3em auto;
+  background-color: #ddd;
+  border-radius: 1em;
+}
+
+.select-wrap:hover {
+  background-color: #ccc;
+}
+
+.select-adjuster {
+  transition: margin .3s;
+}
+
+.select-option {
+  transition: .3s;
+  padding: .5em;
+}
+
+.select-option:hover {
+  background-color: #aaa;
+}
+
+.select-overlay {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.select-wrap.expanded .select-overlay {
+  display: none;
+}
+
+.select-option.checked {
+  font-weight: 700;
+  color: #f55;
+}
+
+.arrow-down {
+  position: absolute;
+  top: 50%;
+  margin-top: -.5em;
+  right: .5em;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.arrow-down:hover {
+  color: #f55;
+}

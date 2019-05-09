@@ -1,116 +1,117 @@
 (function() {
-  var tt = this;
-  function Select(obj, id) {
-    var t = this;
-    t.obj = $(obj);
-    t.identifier = t.obj.attr('id');
-    t.id = id;
-    t.expanded = false;
-    t.selected = 0;
-    t.options = t.obj.find('.select-option').map(function(i, e) {
-      return new Option(e, t, i);
-    });
-    t.overlay = $(document.createElement('div')).addClass('select-overlay');
-    t.overlay.click(function(e) {
-      t.expand();
-    });
-    t.obj.append(t.overlay);
-    t.adjuster = $(document.createElement('div')).addClass('select-adjuster');
-    t.obj.prepend(t.adjuster);
-    t.sumH = 0;
-    t.timeouts = [];
+  class Select {
+    constructor(obj, id) {
+      this.obj = $(obj);
+      this.identifier = this.obj.attr('id');
+      this.id = id;
+      this.expanded = false;
+      this.selected = 0;
+      this.options = this.obj.find('.select-option')
+        .map((index, element) => new Option(element, this, index));
+      this.overlay = $(document.createElement('div'))
+        .addClass('select-overlay');
+      this.overlay.click(event => {
+        this.expand();
+      });
+      this.obj.append(this.overlay);
+      this.adjuster = $(document.createElement('div'))
+        .addClass('select-adjuster');
+      this.obj.prepend(this.adjuster);
+      this.sumH = 0;
+      this.timeouts = [];
 
-    t.obj.find('.arrow-down').click(function() {
-      if (!t.expanded) {
-        t.expand();
-      }
-    });
+      this.obj.find('.arrow-down').click(() => {
+        if (!this.expanded) {
+          this.expand();
+        }
+      });
 
-    t.resize = function() {
-      t.sumH = 0;
-      t.options.map(function(i, e) {
+      this.options.map((index, element) => {
+        if (element.obj.hasClass('checked')) {
+          this.select(element.id);
+        }
+      });
+    }
+
+    resize() {
+      this.sumH = 0;
+      this.options.map(function(i, e) {
         e.resize();
       });
-      t.shrink();
-    };
-    t.select = function(id) {
-      t.options[t.selected].obj.removeClass('checked');
-      t.selected = id;
-      t.options[t.selected].obj.addClass('checked');
-      t.shrink();
-    };
-    t.adjust = function() {
-      t.obj.css({
-        height:	t.options[t.selected].height,
+      this.shrink();
+    }
+
+    select(id) {
+      this.options[this.selected].obj.removeClass('checked');
+      this.selected = id;
+      this.options[this.selected].obj.addClass('checked');
+      this.shrink();
+    }
+
+    adjust() {
+      this.obj.css({
+        height:	this.options[this.selected].height,
       });
-      t.obj.parent().css({
-        height:	t.options[t.selected].height,
+      this.obj.parent().css({
+        height:	this.options[this.selected].height,
       });
-      t.adjuster.css({
-        marginTop:	-t.options[t.selected].offset,
+      this.adjuster.css({
+        marginTop:	-this.options[this.selected].offset,
       });
-    };
-    t.expand = function() {
-      t.obj.css({
-        height:	t.sumH,
+    }
+
+    expand() {
+      this.obj.css({
+        height:	this.sumH,
       });
-      t.adjuster.css({
+      this.adjuster.css({
         marginTop:	0,
       });
-      t.obj.addClass('expanded');
-      t.obj.parents('.select-outer').addClass('expanded');
-      clearTimeout(t.timeouts[0]);
-      t.timeouts[0] = setTimeout(function() {
-        $(document).on('click.f3Selector' + t.id, function() {
-          t.shrink();
-        });
+      this.obj.addClass('expanded');
+      this.obj.parents('.select-outer').addClass('expanded');
+      clearTimeout(this.timeouts[0]);
+      this.timeouts[0] = setTimeout(() => {
+        $(document).on('click.f3Selector' + this.id, () => this.shrink());
       }, 300);
-      t.expanded = true;
-    };
-    t.shrink = function() {
-      clearTimeout(t.timeouts[1]);
-      t.timeouts[1] = setTimeout(function() {
-        t.obj.removeClass('expanded');
-        t.obj.parents('.select-outer').removeClass('expanded');
-        $(document).off('.f3Selector' + t.id);
-      }, 300);
-      t.adjust();
-      t.expanded = false;
-    };
+      this.expanded = true;
+    }
 
-    t.options.map(function(i, e) {
-      if (e.obj.hasClass('checked')) {
-        t.select(e.id);
-      }
-    });
+    shrink() {
+      clearTimeout(this.timeouts[1]);
+      this.timeouts[1] = setTimeout(() => {
+        this.obj.removeClass('expanded');
+        this.obj.parents('.select-outer').removeClass('expanded');
+        $(document).off('.f3Selector' + this.id);
+      }, 300);
+      this.adjust();
+      this.expanded = false;
+    }
   }
 
-  function Option(obj, parent, id) {
-    var t = this;
-    t.obj = $(obj);
-    t.identifier = t.obj.data('value');
-    t.papa = parent;
-    t.id = id;
-    t.height = 0;
-    t.offset = 0;
+  class Option {
+    constructor(obj, parent, id) {
+      this.obj = $(obj);
+      this.identifier = this.obj.data('value');
+      this.papa = parent;
+      this.id = id;
+      this.height = 0;
+      this.offset = 0;
 
-    t.obj.click(function() {
-      t.papa.select(t.id);
-    });
+      this.obj.click(() => this.papa.select(this.id));
+    }
 
-    t.resize = function() {
-      t.height = t.obj.outerHeight();
-      t.offset = t.papa.sumH;
-      t.papa.sumH += t.height;
-    };
+    resize() {
+      this.height = this.obj.outerHeight();
+      this.offset = this.papa.sumH;
+      this.papa.sumH += this.height;
+    }
   }
 
-  tt.selects = $('.select-wrap').map(function(i, e) {
-    return new Select(e, i);
-  });
+  this.selects = $('.select-wrap')
+    .map((index, element) => new Select(element, index));
 
   function resize() {
-    tt.selects.map(function(i, e) {
+    this.selects.map((i, e) => {
       e.resize();
     });
   }
