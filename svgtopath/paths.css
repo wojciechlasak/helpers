@@ -1,0 +1,47 @@
+.container {
+  width:100%;
+  padding:3em;
+}
+#input,
+#output {
+  display:block;
+  width:100%;
+  min-height:10em;
+  height:10em;
+  border:none;
+  background-color:#fff;
+  font:inherit;
+  font-family:monospace;
+  color:inherit;
+  resize:vertical;
+}
+
+button {
+  border:none;
+  background:none;
+  display:block;
+  padding:.5em 1em;
+  margin:0 auto;
+  background-color:#f55;
+  color:#fff;
+  text-transform:uppercase;
+  font-weight:700;
+  letter-spacing:.05em;
+  cursor:pointer;
+  transition:.2s;
+}
+button:hover {
+  background-color:#a00;
+}
+
+#input-svg,
+#output-svg {
+  width:50%;
+  display:block;
+  float:left;
+}
+#input-svg *,
+#output-svg * {
+  stroke:#000;
+  fill:#0005;
+}
