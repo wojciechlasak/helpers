@@ -26,6 +26,8 @@ const createF3Slider = (function() {
       this.prepareDrag();
 
       this.checkSize = this.checkSize.bind(this);
+      this.onMouseMove = this.onMouseMove.bind(this);
+      this.endMouseMove = this.endMouseMove.bind(this);
       window.addEventListener('afterLayoutChange', this.checkSize);
     }
 
@@ -37,6 +39,7 @@ const createF3Slider = (function() {
         isVertical: false,              // direction of the slider
         initialSlide: 0,                // id of the initially selected slide
         duration: 300,                  // duration of the sliding animation
+        mouseDrag: false,               // allows slider to be dragged with the mouse
         // wrap                         selector of the slider wrap
         // arrowUp                      selector of the up arrow, searched in the whole document
         // arrowDown                    analogous
@@ -167,23 +170,42 @@ const createF3Slider = (function() {
       this.wrap.on('touchstart', event => {
         if (!this.isEnabled) return;
         event.preventDefault();
-
         if (this.isSliding) return;
-        this.isDragged = true;
         this.dragStart = {
           x: event.originalEvent.changedTouches[0].pageX,
           y: event.originalEvent.changedTouches[0].pageY,
         };
-        this.lastDrag = {
-          lastSaveId: 0,
-          values: [{
-            x: this.dragStart.x,
-            y: this.dragStart.y,
-          }],
-        };
+        this.onMoveStart();
         window.addEventListener('touchend', this.endDrag);
         window.addEventListener('touchmove', this.onDrag);
       });
+      if (this.options.mouseDrag) {
+        this.wrap.on('mousedown', event => {
+          if (!this.isEnabled) return;
+          event.preventDefault();
+          if (this.isSliding) return;
+          this.dragStart = {
+            x: event.pageX,
+            y: event.pageY,
+          };
+          this.onMoveStart();
+          window.addEventListener('mouseup', this.endMouseMove);
+          window.addEventListener('mousemove', this.onMouseMove);
+        });
+      }
+    }
+
+    onMoveStart() {
+      this.isDragged = true;
+      this.lastDrag = {
+        lastSaveId: 0,
+        values: [
+          {
+            x: this.dragStart.x,
+            y: this.dragStart.y,
+          },
+        ],
+      };
     }
 
     onDrag(event) {
@@ -191,35 +213,71 @@ const createF3Slider = (function() {
         x: event.changedTouches[0].pageX,
         y: event.changedTouches[0].pageY,
       };
+      this.onMove(currentPos);
+    }
 
+    onMouseMove(event) {
+      const currentPos = {
+        x: event.pageX,
+        y: event.pageY,
+      };
+      this.onMove(currentPos);
+    }
+
+    onMove(currentPos) {
       this.lastDrag.lastSaveId = (this.lastDrag.lastSaveId + 1) % 10;
       this.lastDrag.values[this.lastDrag.lastSaveId] = currentPos;
-      const diff = currentPos.y - this.dragStart.y;
+      const axis = this.options.isVertical ? 'y' : 'x';
+      const diff = currentPos[axis] - this.dragStart[axis];
       this.position =
         this.slides[this.currentSlideId].offset - diff - this.slideOffset;
 
-      this.bar.css({
-        top: -this.position,
-      });
+      if (this.options.isVertical) {
+        this.bar.css({
+          top: -this.position,
+        });
+      }
+      else {
+        this.bar.css({
+          left: -this.position,
+        });
+      }
     }
 
     endDrag(event) {
-      this.isDragged = false;
       const dragEnd = {
         x: event.changedTouches[0].pageX,
         y: event.changedTouches[0].pageY,
       };
+      this.endMove(dragEnd);
+      window.removeEventListener('touchend', this.endDrag);
+      window.removeEventListener('touchmove', this.onDrag);
+    }
+
+    endMouseMove(event) {
+      const dragEnd = {
+        x: event.pageX,
+        y: event.pageY,
+      };
+      this.endMove(dragEnd);
+      window.removeEventListener('mouseup', this.endMouseMove);
+      window.removeEventListener('mousemove', this.onMouseMove);
+    }
+
+    endMove(dragEnd) {
+      this.isDragged = false;
+      const axis = this.options.isVertical ? 'y' : 'x';
       let oldestSavedId = 0;
       if (this.lastDrag.values.length === 10) {
         oldestSavedId = (this.lastDrag.lastSaveId + 1) % 10;
       }
 
       let currentPos = this.slides[this.currentSlideId].offset;
-      currentPos -= dragEnd.y - this.dragStart.y;
+      currentPos -= dragEnd[axis] - this.dragStart[axis];
 
       let changedSlide = false;
       // previous position
-      if (dragEnd.y > this.dragStart.y) {
+      if (dragEnd[axis] > this.dragStart[axis]) {
         let found = 0;
         for (let i = 0; i < this.slides.length; i++) {
           if (this.slides[i].offset > currentPos - this.slideOffset) {
@@ -234,11 +292,11 @@ const createF3Slider = (function() {
           changedSlide = true;
         }
         else {
-          this.slideOffset += dragEnd.y - this.dragStart.y;
+          this.slideOffset += dragEnd[axis] - this.dragStart[axis];
         }
       }
       // next position
-      else if (dragEnd.y < this.dragStart.y) {
+      else if (dragEnd[axis] < this.dragStart[axis]) {
         let found = this.slides.length - 1;
         for (let i = 0; i < this.slides.length; i++) {
           const slideBottom = this.slides[i].offset + this.slides[i].size;
@@ -255,17 +313,15 @@ const createF3Slider = (function() {
           changedSlide = true;
         }
         else {
-          this.slideOffset += dragEnd.y - this.dragStart.y;
+          this.slideOffset += dragEnd[axis] - this.dragStart[axis];
         }
       }
       // same position
       if (!changedSlide) {
-        let velocity = dragEnd.y - this.lastDrag.values[oldestSavedId].y;
+        let velocity = dragEnd[axis] - this.lastDrag.values[oldestSavedId][axis];
         this.slideOffset += velocity * 2;
         this.applyPos();
       }
-      window.removeEventListener('touchend', this.endDrag);
-      window.removeEventListener('touchmove', this.onDrag);
     }
 
     checkSize() {
@@ -436,3 +492,16 @@ const createF3Slider = (function() {
     return new F3Slider(options);
   };
 })();
+
+// examples
+createF3Slider({
+  wrap: '#slider-1',
+  slideOnWheel: true,
+  mouseDrag: true,
+});
+createF3Slider({
+  wrap: '#slider-2',
+  isVertical: true,
+  slideOnWheel: true,
+  mouseDrag: true,
+});

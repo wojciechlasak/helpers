@@ -1,0 +1,15 @@
+.single-slide {
+  box-shadow:0 0 5em #000 inset;
+}
+
+#slider-1 {
+  height: 10em;
+}
+
+#slider-2 {
+  height: 10em;
+}
+
+#slider-2 .single-slide {
+  height: 10em;
+}
