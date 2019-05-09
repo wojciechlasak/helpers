@@ -1,5 +1,7 @@
 .single-slide {
-  box-shadow:0 0 5em #000 inset;
+  box-shadow: 0 0 0 10px #333 inset;
+  background-color: #f55;
+  color: #eee;
 }
 
 #slider-1 {
