@@ -1,0 +1,96 @@
+div {
+  display: inline-block;
+}
+svg {
+  width: 5em;
+  margin: 1em;
+}
+
+#close svg path {
+  fill: #000;
+  stroke: #000;
+  stroke-width: 5px;
+}
+.arrow svg path,
+.dash svg path {
+  fill: none;
+  stroke: #000;
+  stroke-width: 3px;
+}
+
+
+/*burger*/
+#burger {
+  position: fixed;
+  top: 2.5em;
+  right: 5em;
+  cursor: pointer;
+  z-index: 101;
+  width: 1.5em;
+  height: 1.5em;
+}
+#burger svg {
+  display: block;
+}
+#burger path {
+  stroke-width: 10;
+  stroke: #000;
+  fill: none;
+  transition: 0.3s;
+  -webkit-transform-origin: 50% 50%;
+  -moz-transform-origin: 50% 50%;
+  -o-transform-origin: 50% 50%;
+  transform-origin: 50% 50%;
+}
+
+#burger.shown path {
+  -webkit-transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  -o-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+
+#burger.shown path:nth-child(1) {
+  -webkit-transform: rotate(45deg) translate(0, 30px);
+  -moz-transform: rotate(45deg) translate(0, 30px);
+  -o-transform: rotate(45deg) translate(0, 30px);
+  transform: rotate(45deg) translate(0, 30px);
+}
+
+#burger.shown path:nth-child(3) {
+  -webkit-transform: rotate(-45deg) translate(0, -30px);
+  -moz-transform: rotate(-45deg) translate(0, -30px);
+  -o-transform: rotate(-45deg) translate(0, -30px);
+  transform: rotate(-45deg) translate(0, -30px);
+}
+
+/*video arrow*/
+#arrow-video{
+    cursor: pointer;
+}
+
+#arrow-video path,
+#arrow-video circle {
+  fill: none;
+  stroke: #000;
+  stroke-width: 1.5;
+  transition: 2s;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+#arrow-video path {
+  stroke-dasharray: 180;
+}
+
+#arrow-video circle {
+  stroke-dasharray: 320;
+}
+
+#arrow-video:hover path {
+  stroke-dashoffset: 360;
+}
+
+#arrow-video:hover circle {
+  stroke-dashoffset: 640;
+}
