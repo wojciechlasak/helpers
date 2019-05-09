@@ -4,6 +4,8 @@
   transition: .3s;
   width: 20em;
   margin: 3em auto;
+  background-color: #ddd;
+  border-radius: 1em;
 }
 
 .select-wrap:hover {
@@ -16,6 +18,7 @@
 
 .select-option {
   transition: .3s;
+  padding: .5em;
 }
 
 .select-option:hover {
@@ -36,13 +39,16 @@
 
 .select-option.checked {
   font-weight: 700;
+  color: #f55;
 }
 
 .arrow-down {
   position: absolute;
-  top: 0;
-  right: 0;
+  top: 50%;
+  margin-top: -.5em;
+  right: .5em;
   cursor: pointer;
+  line-height: 1;
 }
 
 .arrow-down:hover {
