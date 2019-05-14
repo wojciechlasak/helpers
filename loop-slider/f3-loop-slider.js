@@ -30,6 +30,9 @@ const createLoopSlider = (function() {
       this.slidesWidth = 0;
       this.current = 0;
       this.clonesAmount = 0;
+      this.scrollItem = createScrollItem(container);
+      this.setInterval;
+      this.disabled = false;
 
       this.options = options;
       this.interval = this.options.interval;
@@ -45,11 +48,27 @@ const createLoopSlider = (function() {
       this.firstSlide = this.slides[0].$element;
       this.createClones();
 
+      this.activate();
+    }
+
+    activate() {
       if (this.interval === undefined) {
         this.smoothAnimate();
       }
       if (this.durationMultiplier === undefined) {
         this.intervalAnimate();
+      }
+    }
+
+    isOnScreen() {
+      if (!this.scrollItem.isOnScreen) {
+        this.disabled = true;
+        clearInterval(this.setInterval);
+        this.$element.stop(true);
+      }
+      else if (this.disabled) {
+        this.disabled = false;
+        this.activate();
       }
     }
 
@@ -93,7 +112,7 @@ const createLoopSlider = (function() {
       this.$element.css({
         left: -this.slidesWidth,
       });
-      setInterval(() => {
+      this.setInterval = setInterval(() => {
         let shouldLoop = false;
         this.current =
           (this.current - 1 + this.slidesLength) % this.slidesLength;
@@ -113,11 +132,29 @@ const createLoopSlider = (function() {
     }
   }
 
-  $(window).on('resize', () => {
-    loopSliderCollection.map(e => {
-      e.resize();
-    });
-  });
+  $(window)
+    .on('load', () => {
+      loopSliderCollection.map(e => {
+        e.isOnScreen();
+      });
+    })
+    .on(
+      'resize',
+      frameThrottle(() => {
+        loopSliderCollection.map(e => {
+          e.resize();
+          e.isOnScreen();
+        });
+      })
+    )
+    .on(
+      'scroll',
+      frameThrottle(() => {
+        loopSliderCollection.map(e => {
+          e.isOnScreen();
+        });
+      })
+    );
 
   window.addEventListener('afterLayoutChange', function() {
     loopSliderCollection.map(e => {
