@@ -73,7 +73,6 @@
         marginTop:	0,
       });
       this.obj.addClass('expanded');
-      this.obj.parents('.select-outer').addClass('expanded');
       clearTimeout(this.timeouts[0]);
       this.timeouts[0] = setTimeout(() => {
         $(document).on('click.f3Selector' + this.id, () => this.shrink());
@@ -85,7 +84,6 @@
       clearTimeout(this.timeouts[1]);
       this.timeouts[1] = setTimeout(() => {
         this.obj.removeClass('expanded');
-        this.obj.parents('.select-outer').removeClass('expanded');
         $(document).off('.f3Selector' + this.id);
       }, 300);
       this.adjust();
