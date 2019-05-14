@@ -1,3 +1,8 @@
+/**
+ * wraper '.select-wrap'
+ * singleElement '.select-option'
+ */
+
 (function() {
   class Select {
     constructor(obj, id) {

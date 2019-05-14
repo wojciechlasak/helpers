@@ -30,6 +30,7 @@
 var cp = new Clipboard('#cp');
 var mouseX;
 var mouseY;
+
 cp.on('success', function() {
 	if (window.getSelection) window.getSelection().removeAllRanges();
   else if (document.selection) document.selection.empty();
@@ -59,7 +60,4 @@ $(document).mousemove( function(e) {
    mouseY = e.pageY;
 
 });  
-
-
-
 </script>

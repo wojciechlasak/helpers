@@ -1,3 +1,14 @@
+/**
+ * Prepare and create AnchorScroll
+ *
+ * @param {selector} wraperNav navigation wraper
+ * @param {selector} singleNav single element in navigation
+ * @param {selector} anchorSection anchor for specify section
+ * @param {object} options extra options
+ * @param {function} options.onScroll callback function which is executed on scroll
+ * @returns {array} array of NavScroll object
+ */
+
 const createAnchorScroll = (function() {
   const navScrollCollection = [];
   let wraperNav;
@@ -96,12 +107,13 @@ const createAnchorScroll = (function() {
 
   window.addEventListener('afterLayoutChange', setCurrentAnchor);
 
-  return function(_wraperNav, sectionNav, section, options) {
+  return function(wraperNav, singleNav, anchorSection, options) {
     if (options === undefined) options = {};
-    wraperNav = $(_wraperNav);
-    wraperNav.find(sectionNav).map(function() {
+
+    $wraperNav = $(wraperNav);
+    $wraperNav.find(singleNav).map(function() {
       const title = $(this).data('anchor');
-      const anchor = $(section).filter(function() {
+      const anchor = $(anchorSection).filter(function() {
         return $(this).data('ref') === title;
       });
       const navScroll = new NavScroll(
@@ -114,7 +126,7 @@ const createAnchorScroll = (function() {
       );
       navScrollCollection.push(navScroll);
     });
-    return navScroll;
+    return navScrollCollection;
   };
 })();
 

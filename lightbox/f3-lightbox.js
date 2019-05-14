@@ -1,3 +1,20 @@
+/**
+ * add new Lightbox
+ * @param {object} options extra options
+ * @param {selector} options.container lightbox container
+ * @param {selector} options.items single element which activate lightbox
+ * @param {boolean} options.hasArrows does lightbox have arrows
+ * @param {boolean} options.hasExit does lightbox have exit icon
+ * @param {function} options.onActivate callback function which is executed on activate
+ * @param {function} options.onDeactivate callback function which is executed on deactivate
+ * @param {function} options.onChange callback function which is executed on change
+ * @param {function} options.onResize callback function which is executed on resize
+ * @returns {object} Lightbox
+ * containerIn '.lb'
+ * arrows '.arrow-left' '.arrow-right'
+ * exit '.close-lb'
+ */
+
 const createLightbox = (function() {
   class SingleLightbox {
     constructor(i, e, parent) {
@@ -101,8 +118,8 @@ const createLightbox = (function() {
         setTimeout(() => {
           this.$container.addClass('hidden');
         }, 300);
-        if (this.options.onDeactive !== undefined) {
-          this.options.onDeActivate.call(this);
+        if (this.options.onnDeactivate !== undefined) {
+          this.options.onDeactivate.call(this);
         }
       }
     }
@@ -155,6 +172,8 @@ const createLightbox = (function() {
       }
     }
   }
+
+  window.addEventListener('afterLayoutChange', resize);
 
   return function(options) {
     const lb = new Lightbox(options);

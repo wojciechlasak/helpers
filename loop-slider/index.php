@@ -10,12 +10,21 @@
   </head>
   <body>
   
-  <div id="loop-slider">
+    <div class="loop-slider">
       <div class="loop-slider-wrap flex flex-align-center">
         <div class="slider-single"><span style="font-size:8em;">a</a></div>
         <div class="slider-single"><span style="font-size:8em;">i</a></div>
         <div class="slider-single"><span style="font-size:8em;">c</a></div>
         <div class="slider-single"><span style="font-size:8em;">w</a></div>
+      </div>
+    </div>
+
+    <div class="loop-slider">
+      <div class="loop-slider-wrap2 flex flex-align-center">
+        <div class="slider-single2"><span style="font-size:8em;">a</a></div>
+        <div class="slider-single2"><span style="font-size:8em;">b</a></div>
+        <div class="slider-single2"><span style="font-size:8em;">c</a></div>
+        <div class="slider-single2"><span style="font-size:8em;">d</a></div>
       </div>
     </div>
     <script src="./../f3.js"></script>

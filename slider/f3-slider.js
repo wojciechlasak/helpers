@@ -1,6 +1,27 @@
-jQuery.extend(jQuery.easing, {easeOutQuad: function(x, t, b, c, d) {
-  return -c * (t /= d) * (t - 2) + b;
-}});
+/**
+ * create F3 slider
+ * @param {object} options extra options
+ * @param {boolean} options.slideOnWheel default=false,
+ * @param {boolean} options.shouldHaveBullets default=true,
+ * @param {selector} options.slideSelector default='.single-slide', selector of a single slide, searched inside wrap
+ * @param {boolean} options.isVertical default=false, direction of the slider
+ * @param {number} options.initialSlide default=0, id of the initially selected slide
+ * @param {number} options.duration default=300, duration of the sliding animation
+ * @param {boolean} options.mouseDrag default=false, allows slider to be dragged with the mouse
+ * @param {boolean} options.useKeys default=false, changes slides on arrow keys, can be changed later
+ * @param {selector} options.wrap selector of the slider wrap
+ * @param {selector} options.arrowPrev selector of the up arrow, searched in the whole document
+ * @param {selector} options.arrowNext analogous
+ * @param {function} onActivate callback to be called when a slide activates
+ * @param {function} onDeactivate analogous
+ * @returns F3Slider
+ */
+
+jQuery.extend(jQuery.easing, {
+  easeOutQuad: function(x, t, b, c, d) {
+    return -c * (t /= d) * (t - 2) + b;
+  },
+});
 
 const createF3Slider = (function() {
   class F3Slider {
@@ -10,13 +31,13 @@ const createF3Slider = (function() {
       if (this.wrap.length !== 1) return;
 
       this.prepareOptions(options);
-      this.currentSlideId = this.options.initialSlide;  // id of the current slide
-      this.slideOffset = 0;                             // number of pixels from current slide top
-      this.position = 0;                                // current scroll amount in pixels
-      this.size = 0;                                    // size of the entire scroll bar
-      this.wrapSize = 0;                                // size of the wrap
-      this.isSliding = false;                           // is slider currently being animated
-      this.isDragged = false;                           // is slider currently being dragged
+      this.currentSlideId = this.options.initialSlide; // id of the current slide
+      this.slideOffset = 0; // number of pixels from current slide top
+      this.position = 0; // current scroll amount in pixels
+      this.size = 0; // size of the entire scroll bar
+      this.wrapSize = 0; // size of the wrap
+      this.isSliding = false; // is slider currently being animated
+      this.isDragged = false; // is slider currently being dragged
       this.isEnabled = options.isEnabled;
       if (this.isEnabled === undefined) this.isEnabled = true;
 
@@ -35,17 +56,12 @@ const createF3Slider = (function() {
       this.options = {
         slideOnWheel: false,
         shouldHaveBullets: true,
-        slideSelector: '.single-slide', // selector of a single slide, searched inside wrap
-        isVertical: false,              // direction of the slider
-        initialSlide: 0,                // id of the initially selected slide
-        duration: 300,                  // duration of the sliding animation
-        mouseDrag: false,               // allows slider to be dragged with the mouse
-        useKeys: false,                 // changes slides on arrow keys, can be changed later
-        // wrap                         selector of the slider wrap
-        // arrowPrev                    selector of the up arrow, searched in the whole document
-        // arrowNext                    analogous
-        // onActivate                   callback to be called when a slide activates
-        // onDeactivate                 analogous
+        slideSelector: '.single-slide',
+        isVertical: false,
+        initialSlide: 0,
+        duration: 300,
+        mouseDrag: false,
+        useKeys: false,
       };
       for (const optionName in options) {
         this.options[optionName] = options[optionName];
@@ -334,7 +350,8 @@ const createF3Slider = (function() {
       }
       // same position
       if (!changedSlide) {
-        let velocity = dragEnd[axis] - this.lastDrag.values[oldestSavedId][axis];
+        let velocity =
+          dragEnd[axis] - this.lastDrag.values[oldestSavedId][axis];
         this.slideOffset += velocity * 2;
         this.applyPos();
       }
