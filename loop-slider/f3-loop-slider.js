@@ -64,7 +64,7 @@ const createLoopSlider = (function() {
       if (!this.scrollItem.isOnScreen) {
         this.disabled = true;
         clearInterval(this.setInterval);
-        this.$element.stop(true);
+        this.$element.stop();
       }
       else if (this.disabled) {
         this.disabled = false;

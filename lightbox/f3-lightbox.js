@@ -173,7 +173,7 @@ const createLightbox = (function() {
     }
   }
 
-  window.addEventListener('afterLayoutChange', resize);
+  window.addEventListener('afterLayoutChange', this.resize);
 
   return function(options) {
     const lb = new Lightbox(options);
