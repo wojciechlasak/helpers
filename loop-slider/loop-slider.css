@@ -1,0 +1,28 @@
+.loop-slider{
+    box-shadow: 0 0 0 1px #000;
+    position: relative;
+    overflow: hidden;
+    height: 200px;
+}
+
+.loop-slider-wrap{
+    position: absolute;
+    width: 100%;
+    top: 0;
+    left: 0;    
+}
+
+.slider-single{
+    padding:1em;
+}
+
+.loop-slider-wrap2{
+    position: absolute;
+    width: 100%;
+    top: 0;
+    left: 0;    
+}
+
+.slider-single2{
+    padding:1em;
+}

@@ -1,3 +1,10 @@
+/**
+ * create new svg draw
+ * 
+ * @param {selector} element path
+ * @param {number} pos fill percentage
+ * @returns {object} SDraw
+ */
 const createSDraw = (() => {
   const sdraws = [];
   class SDraw {

@@ -1,9 +1,11 @@
-/*
-options: {
-  onScroll: function(scrollItem) {},
-  onStateChange = function(prop, value, scrollItem) {},
-}
-*/
+/**
+ * create new scroll item
+ * @param {selector} element element to scroll
+ * @param {object} options extra options
+ * @param {function} options.onScroll function(scrollItem)
+ * @param {function} options.onStateChange function(prop, value, scrollItem)
+ * @returns {object} scrollItem
+ */
 const createScrollItem = (function() {
   class ScrollItem {
     constructor(element, options) {
