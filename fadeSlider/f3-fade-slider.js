@@ -175,6 +175,7 @@ version:	1.0
   window.addEventListener('layoutChange', refresh);
   window.addEventListener('keydown', event => {
     if (event.which !== 39 && event.which !== 37) return;
+    if (fadeSliders.length === 0) return;
     let closest;
     let closestDiff = Infinity;
     for (const slider of fadeSliders) {
