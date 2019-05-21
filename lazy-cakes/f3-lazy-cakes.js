@@ -20,7 +20,7 @@
       }
     };
     t.load = function() {
-      if (!t.isLoaded) {
+      if (!t.isLoaded && t.el.height() !== 0) {
         t.el.addClass('loading');
         t.img.attr({src: t.src}).load(function() {
           t.el.removeClass('loading');
@@ -40,21 +40,16 @@
       return new lazyCake(e);
     });
     $(window)
-      .resize(throttle(100, lazyCakesResize))
       .scroll(throttle(100, lazyCakesScroll));
-    $(window).load(lazyCakesResize);
-    lazyCakesResize();
+
+    window.addEventListener('afterLayoutChange', lazyCakesResize);
   }
   function lazyCakesResize() {
-    lazyCakes.map(function(i, e) {
-      e.resize();
-    });
+    lazyCakes.map(function(i, e) {e.resize();});
     lazyCakesScroll();
   }
   function lazyCakesScroll() {
-    lazyCakes.map(function(i, e) {
-      e.check();
-    });
+    lazyCakes.map(function(i, e) {e.check();});
   }
 
   lazyCakesStart();
