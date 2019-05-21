@@ -1,15 +1,25 @@
-/*
-version:	1.0
-*/
+/**
+ * version:	1.1
+ * add new Slider
+ * @param {selector} container slider container
+ * @param {object} options extra options
+ * @param {function} options.onChange callback function which is executed on change
+ * @returns {Array<Slider>}
+ * containerIn '.lb'
+ * arrows '.slider-arrows' '.slider-left' '.slider-right'
+ * bullets '.slider-bullets' '.slider-bullet'
+ * interval 'data-interval'
+ */
 
-(function() {
+const createFadeSlider = (function() {
   fadeSliders = [];
   class Slider {
-    constructor(element) {
+    constructor(element, options) {
       this.applyCss(element);
+      this.options = options;
       this.interval = this.element.data('interval');
-      this.interval = this.interval !== undefined ?
-        parseInt(this.interval) : false;
+      this.interval =
+        this.interval !== undefined ? parseInt(this.interval) : false;
       if (this.interval) {
         this.intervalHandle = setInterval(this.next.bind(this), this.interval);
       }
@@ -122,6 +132,9 @@ version:	1.0
         this.slides.eq(n).addClass('current-slide');
         this.bullets[previous].removeClass('bullet-current');
         this.bullets[n].addClass('bullet-current');
+        if (this.options.onChange !== undefined) {
+          this.options.onChange.call(this, n);
+        }
         this.c = n;
         window.dispatchEvent(new CustomEvent('fadeSliderChange', {
           detail: {slider: this, prev: previous},
@@ -141,23 +154,10 @@ version:	1.0
 
     prev() {
       let target = this.c - 1;
-      if (target < 0)
-        target = this.slides.length - 1;
+      if (target < 0) target = this.slides.length - 1;
       this.goTo(target);
     }
   }
-
-
-  $('.fade-slider-wrap').each((index, element) => {
-    const slider = new Slider(element);
-    if (
-      slider.id === undefined ||
-			fadeSliders[slider.id] !== undefined
-    ) {
-      slider.id = index;
-    }
-    fadeSliders[slider.id] = slider;
-  });
 
   function refresh() {
     for (const slider in fadeSliders) {
@@ -175,6 +175,7 @@ version:	1.0
   window.addEventListener('layoutChange', refresh);
   window.addEventListener('keydown', event => {
     if (event.which !== 39 && event.which !== 37) return;
+    if (fadeSliders.length === 0) return;
     let closest;
     let closestDiff = Infinity;
     for (const slider of fadeSliders) {
@@ -194,4 +195,16 @@ version:	1.0
       closest.prev();
     }
   });
+
+  return function(container, options) {
+    if (options === undefined) options = {};
+    $(container).each((index, element) => {
+      const slider = new Slider(element, options);
+      if (slider.id === undefined || fadeSliders[slider.id] !== undefined) {
+        slider.id = index;
+      }
+      fadeSliders[slider.id] = slider;
+    });
+    return fadeSliders;
+  };
 })();

@@ -130,22 +130,3 @@ $(window)
 window.addEventListener('afterLayoutChange', function() {
   stickies.map(function(i, e) {e.onResize();});
 });
-
-
-window.addEventListener('wpcf7invalid', function() {
-  setTimeout(function() {
-    stickies.map(function(i, e) {e.onResize();});
-  }, 100);
-});
-
-window.addEventListener('wpcf7mailsent', function() {
-  setTimeout(function() {
-    stickies.map(function(i, e) {e.onResize();});
-  }, 100);
-});
-
-window.addEventListener('wpcf7mailfailed', function() {
-  setTimeout(function() {
-    stickies.map(function(i, e) {e.onResize();});
-  }, 100);
-});
