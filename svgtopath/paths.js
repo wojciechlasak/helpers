@@ -36,7 +36,7 @@ function convert() {
     const x2 = parseFloat(match.match(/x2 ?= ?"([0-9.]*)"/)[1]);
     const y1 = parseFloat(match.match(/y1 ?= ?"([0-9.]*)"/)[1]);
     const y2 = parseFloat(match.match(/y2 ?= ?"([0-9.]*)"/)[1]);
-    p1 = p1.replace(/(x1|x2|y1|y2)="[0-9.]*" ?/g, '');
+    p1 = p1.replace(/(x1|x2|y1|y2) ?= ?"[0-9.]*" ?/g, '');
     return `<path d="M${x1} ${y1} L ${x2} ${y2}"${p1}`;
   });
 
