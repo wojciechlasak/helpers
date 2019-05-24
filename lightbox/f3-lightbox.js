@@ -27,6 +27,10 @@ const createLightbox = (function() {
         this.parent.active(this.id);
       });
     }
+
+    destroy() {
+      this.$element.off('click');
+    }
   }
 
   class Lightbox {
@@ -170,6 +174,21 @@ const createLightbox = (function() {
           this.arrowLeft.removeClass('hidden');
         }
       }
+    }
+
+    recreate(items) {
+      this.lightboxCollection.map(singleLightbox => singleLightbox.destroy());
+      this.lightboxCollection = [];
+      if (items === undefined) {
+        this.$items = $(this.options.items);
+      }
+      else {
+        this.$items = $(items);
+      }
+      this.$items.map((i, e) => {
+        let singleLb = new SingleLightbox(i, e, this);
+        this.lightboxCollection.push(singleLb);
+      });
     }
   }
 
