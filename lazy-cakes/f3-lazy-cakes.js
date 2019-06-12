@@ -42,9 +42,7 @@ const lazyCakes = (() => {
     $('.lazy-cake').map(function(i, e) {
       lazyCakes.push(new LazyCake(e));
     });
-    $('#screen-container')
-      .scroll(throttle(100, lazyCakesScroll));
-
+    f3.window.scroll(throttle(100, lazyCakesScroll));
     window.addEventListener('afterLayoutChange', lazyCakesResize);
   }
   function lazyCakesResize() {
