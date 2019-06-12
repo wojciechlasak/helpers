@@ -1,56 +1,72 @@
 // lazy cakes
-(function() {
-  function lazyCake(e) {
-    var t = this;
-    t.el = $(e);
-    t.cake = t.el.children('.cake');
-    t.top = 0;
-    t.isLoaded = false;
-    t.src = t.el.data('bg');
-    t.img = $(document.createElement('img')).addClass('lazy-cake-temp');
-    t.el.append(t.cake).append(t.img);
+const lazyCakes = (() => {
+  class LazyCake {
+    constructor(e) {
+      this.el = $(e);
+      this.cake = this.el.children('.cake');
+      this.top = 0;
+      this.isLoaded = false;
+      this.src = this.el.data('bg');
+      this.img = $(document.createElement('img')).addClass('lazy-cake-temp');
+      this.el.append(this.cake).append(this.img);
+    }
 
-    t.resize = function() {
-      t.top = t.el.offset().top;
-      t.check();
-    };
-    t.check = function() {
-      if (t.top < f3.s + f3.h) {
-        t.load();
+    resize() {
+      this.top = this.el.offset().top;
+      this.check();
+    }
+
+    check() {
+      if (this.top < f3.s + f3.h) {
+        this.load();
       }
-    };
-    t.load = function() {
-      if (!t.isLoaded && t.el.height() !== 0) {
-        t.el.addClass('loading');
-        t.img.attr({src: t.src}).load(function() {
-          t.el.removeClass('loading');
-          t.cake.css({
-            backgroundImage: 'url(' + t.src + ')',
+    }
+
+    load() {
+      if (!this.isLoaded && this.el.height() !== 0) {
+        this.el.addClass('loading');
+        this.img.attr({src: this.src}).load(() => {
+          this.el.removeClass('loading');
+          this.cake.css({
+            backgroundImage: 'url(' + this.src + ')',
             opacity: 1,
           });
         });
-        t.isLoaded = true;
+        this.isLoaded = true;
       }
-    };
+    }
   }
 
-  var lazyCakes = [];
+  let lazyCakes = [];
   function lazyCakesStart() {
-    lazyCakes = $('.lazy-cake').map(function(i, e) {
-      return new lazyCake(e);
+    $('.lazy-cake').map(function(i, e) {
+      lazyCakes.push(new LazyCake(e));
     });
-    $(window)
+    $('#screen-container')
       .scroll(throttle(100, lazyCakesScroll));
 
     window.addEventListener('afterLayoutChange', lazyCakesResize);
   }
   function lazyCakesResize() {
-    lazyCakes.map(function(i, e) {e.resize();});
+    lazyCakes.map(function(e) {e.resize();});
     lazyCakesScroll();
   }
   function lazyCakesScroll() {
-    lazyCakes.map(function(i, e) {e.check();});
+    lazyCakes.map(function(e) {e.check();});
   }
 
   lazyCakesStart();
+
+  return {
+    cakes: lazyCakes,
+    add: selector => {
+      lazyCakes.push(new LazyCake(selector));
+    },
+    recreate: () => {
+      lazyCakes = [];
+      $('.lazy-cake').map(function(i, e) {
+        lazyCakes.push(new LazyCake(e));
+      });
+    },
+  };
 })();
