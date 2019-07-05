@@ -23,7 +23,7 @@ const lazyCakes = (() => {
     }
 
     load() {
-      if (!this.isLoaded && this.el.height() !== 0) {
+      if (!this.isLoaded && this.el.outerHeight() !== 0) {
         this.el.addClass('loading');
         this.img.attr({src: this.src}).load(() => {
           this.el.removeClass('loading');
