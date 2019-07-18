@@ -15,8 +15,8 @@ class Regulator {
         target: this.start[this.names[i]],
         isAnimating: false,
         dx: 0,
+        edx: 0,
         eddx: 0,
-        percent: 0,
       };
     }
   }
@@ -27,14 +27,14 @@ class Regulator {
     }
   }
 
-  animate(target) {
+  animate(target, jump) {
     const targetNames = Object.getOwnPropertyNames(target);
     let changesMade = false;
     for (let i = 0; i < targetNames.length; i++) {
-      if (this.x[targetNames[i]].target !== target[targetNames[i]]) {
+      if (this.x[targetNames[i]].target !== target[targetNames[i]] || jump) {
         changesMade = true;
         this.x[targetNames[i]].target = target[targetNames[i]];
-        this.x[targetNames[i]].percent = 0;
+        if (jump) this.x[targetNames[i]].value = target[targetNames[i]];
         this.x[targetNames[i]].isAnimating = true;
       }
     }
@@ -55,12 +55,17 @@ class Regulator {
           property.eddx :
           this.transformEddx(property.eddx, this.names[i]);
         diff += eddx;
-        property.dx += Math.max(Math.min(diff, this.saturation), -this.saturation);
-        property.value += property.dx * this.amplification;
-        property.dx /= this.friction;
+        if (property.edx) {
+          property.value += property.edx;
+        }
+        else {
+          property.dx += Math.max(Math.min(diff, this.saturation), -this.saturation);
+          property.value += property.dx * this.amplification;
+          property.dx /= this.friction;
+        }
         diff = property.target - property.value;
         if (
-          property.eddx !== 0 ||
+          property.edx !== 0 ||
           Math.abs(property.dx) > 0.001 ||
           Math.abs(diff) > 0.01
         ) {
@@ -92,7 +97,23 @@ class Regulator {
       this.startAnimation();
     }
   }
+
+  edx(target) {
+    const targetNames = Object.getOwnPropertyNames(target);
+    let changesMade = false;
+    for (let i = 0; i < targetNames.length; i++) {
+      changesMade = true;
+      if (this.x[targetNames[i]].edx !== target[targetNames[i]]) {
+        this.x[targetNames[i]].edx = target[targetNames[i]];
+        this.x[targetNames[i]].isAnimating = true;
+      }
+    }
+    if (changesMade) {
+      this.startAnimation();
+    }
+  }
 }
+
 
 // examples
 const spring1 = $('#spring-1');
