@@ -87,8 +87,10 @@ const createLoopSlider = (function() {
     resize() {
       this.width = this.$element.width();
       this.createClones();
-      this.slides.map(e => {
-        e.resize();
+      this.slidesWidth = 0;
+      this.slides.map(slide => {
+        slide.resize();
+        this.slidesWidth += slide.width;
       });
     }
 
